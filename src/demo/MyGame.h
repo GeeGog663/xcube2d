@@ -9,24 +9,26 @@ struct GameKey {
 };
 
 class MyGame : public AbstractGame {
-	private:
-		Rect box;
+private:
+	Rect box;
+	SDL_Texture* playertexture;
+	AnimatedSprite* playerspr;
 
-		Vector2i velocity;
+	Vector2i velocity;
 
-		std::vector<std::shared_ptr<GameKey>> gameKeys;
+	std::vector<std::shared_ptr<GameKey>> gameKeys;
 
-		/* GAMEPLAY */
-		int score, numKeys, lives;
-		bool gameWon;
+	/* GAMEPLAY */
+	int score, numKeys, lives;
+	bool gameWon;
 
-		void handleKeyEvents();
-		void update();
-		void render();
-		void renderUI();
-	public:
-        MyGame();
-		~MyGame();
+	void handleKeyEvents();
+	void update();
+	void render();
+	void renderUI();
+public:
+	MyGame();
+	~MyGame();
 };
 
 #endif
