@@ -1,21 +1,27 @@
 #include "MyGame.h"
+#include <SDL_image.h>
+#include <SDL_surface.h>
 
-MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), box(5, 5, 30, 30) {
-	TTF_Font * font = ResourceManager::loadFont("res/fonts/arial.ttf", 72);
+MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), box(5, 5, 30, 50) {
+	TTF_Font* font = ResourceManager::loadFont("../res/fonts/arial.ttf", 72);
 	gfx->useFont(font);
 	gfx->setVerticalSync(true);
 
-    for (int i = 0; i < numKeys; i++) {
-        std::shared_ptr<GameKey> k = std::make_shared<GameKey>();
-        k->isAlive = true;
-        k->pos = Point2(getRandom(0, 750), getRandom(0, 550));
-        gameKeys.push_back(k);
-    }
+	SDL_Surface* playerSurf = IMG_Load("../res/images/WaterGirl.png");
+	playertexture = gfx->createTextureFromSurface(playerSurf);
+
+	mySystem->createAnimation("defaultanim", 15, 25, 6, 12);
+
+
+	for (int i = 0; i < numKeys; i++) {
+		std::shared_ptr<GameKey> k = std::make_shared<GameKey>();
+		k->isAlive = true;
+		k->pos = Point2(getRandom(0, 750), getRandom(0, 550));
+		gameKeys.push_back(k);
+	}
 }
 
-MyGame::~MyGame() {
-
-}
+MyGame::~MyGame() { }
 
 void MyGame::handleKeyEvents() {
 	int speed = 3;
@@ -50,7 +56,7 @@ void MyGame::update() {
 	}
 
 	velocity.x = 0;
-    velocity.y = 0;
+	velocity.y = 0;
 
 	if (numKeys == 0) {
 		gameWon = true;
@@ -61,10 +67,16 @@ void MyGame::render() {
 	gfx->setDrawColor(SDL_COLOR_RED);
 	gfx->drawRect(box);
 
+	SDL_Rect rect = box.getSDLRect();
+	SDL_Rect src = mySystem->getCurrentFrameRect("defaultanim");
+	gfx->drawTexture(playertexture, &src, &rect, 0.0, 0, SDL_FLIP_NONE);
+
 	gfx->setDrawColor(SDL_COLOR_YELLOW);
 	for (auto key : gameKeys)
-        if (key->isAlive)
-		    gfx->drawCircle(key->pos, 5);
+		if (key->isAlive)
+			gfx->drawCircle(key->pos, 5);
+
+	mySystem->updateAnimations();
 }
 
 void MyGame::renderUI() {
